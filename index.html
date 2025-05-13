@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guardianes del Páramo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to top, #e0f7fa, #a7ffeb);
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+    .intro {
+      margin-bottom: 20px;
+      font-size: 1em;
+      text-align: justify;
+    }
+    .question {
+      font-size: 1.2em;
+      margin: 20px 0;
+    }
+    .btn {
+      display: block;
+      background-color: #66bb6a;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 10px;
+      margin: 10px auto;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background-color: #388e3c;
+    }
+    #result, #feedback {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 80%;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌿 Guardianes del Páramo 🌿</h1>
+    <div class="intro" id="intro">
+      <p>El páramo es un ecosistema único que se encuentra en zonas altas de montaña, principalmente en los Andes. Su vegetación incluye plantas resistentes al frío como el frailejón, y es hogar de especies emblemáticas como el oso de anteojos.</p>
+      <p>Este ecosistema es fundamental para la regulación del agua, pues actúa como una gran esponja que la filtra y distribuye a ríos y comunidades. Además, ayuda a capturar carbono, siendo clave para mitigar el cambio climático.</p>
+      <p>Sin embargo, está amenazado por actividades como la ganadería intensiva, la minería y el cambio climático. ¡Conoce más jugando!</p>
+      <input type="text" id="nombreJugador" placeholder="Ingresa tu nombre" />
+      <button class="btn" onclick="iniciarJuego()">Comenzar</button>
+    </div>
+
+    <div id="quiz" style="display:none;">
+      <div class="question" id="question"></div>
+      <div id="answers"></div>
+      <div id="feedback"></div>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const todasLasPreguntas = [
+      { categoria: 'Flora', texto: '¿Cuál de estas plantas es típica del páramo?', opciones: ['Cactus', 'Frailejón', 'Helecho'], correcta: 'Frailejón' },
+      { categoria: 'Flora', texto: '¿Qué planta del páramo tiene hojas grandes y retiene agua?', opciones: ['Orquídea', 'Musgo', 'Frailejón'], correcta: 'Frailejón' },
+      { categoria: 'Fauna', texto: '¿Qué animal vive en el páramo andino?', opciones: ['Oso de anteojos', 'Jaguar', 'Iguana'], correcta: 'Oso de anteojos' },
+      { categoria: 'Fauna', texto: '¿Cuál de estos animales es característico del páramo?', opciones: ['Cóndor andino', 'Cocodrilo', 'Perezoso'], correcta: 'Cóndor andino' },
+      { categoria: 'Hidrología', texto: '¿Por qué el páramo es importante para el agua?', opciones: ['Genera huracanes', 'Filtra y regula el agua', 'Contamina los ríos'], correcta: 'Filtra y regula el agua' },
+      { categoria: 'Importancia ecológica', texto: '¿Qué función cumple el páramo en el clima?', opciones: ['Calienta el planeta', 'Absorbe CO2 y regula la temperatura', 'Produce petróleo'], correcta: 'Absorbe CO2 y regula la temperatura' },
+      { categoria: 'Amenazas', texto: '¿Cuál es una amenaza actual al ecosistema del páramo?', opciones: ['Reforestación', 'Ganadería intensiva', 'Turismo responsable'], correcta: 'Ganadería intensiva' },
+      { categoria: 'Amenazas', texto: '¿Qué actividad humana afecta negativamente el páramo?', opciones: ['Agroecología', 'Minería', 'Educación ambiental'], correcta: 'Minería' }
+    ];
+
+    let preguntas = [];
+    let preguntaActual = 0;
+    let puntaje = 0;
+    let nombre = '';
+
+    function iniciarJuego() {
+      nombre = document.getElementById('nombreJugador').value.trim();
+      if (!nombre) {
+        alert('Por favor, ingresa tu nombre para comenzar.');
+        return;
+      }
+      preguntas = seleccionarPreguntasAleatorias(5);
+      preguntaActual = 0;
+      puntaje = 0;
+      document.getElementById('intro').style.display = 'none';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('quiz').style.display = 'block';
+      mostrarPregunta();
+    }
+
+    function seleccionarPreguntasAleatorias(cantidad) {
+      const copia = [...todasLasPreguntas];
+      const seleccionadas = [];
+      while (seleccionadas.length < cantidad && copia.length > 0) {
+        const index = Math.floor(Math.random() * copia.length);
+        seleccionadas.push(copia.splice(index, 1)[0]);
+      }
+      return seleccionadas;
+    }
+
+    function mostrarPregunta() {
+      const pregunta = preguntas[preguntaActual];
+      document.getElementById('question').textContent = `${pregunta.categoria}: ${pregunta.texto}`;
+      const answersDiv = document.getElementById('answers');
+      const feedbackDiv = document.getElementById('feedback');
+      answersDiv.innerHTML = '';
+      feedbackDiv.textContent = '';
+      pregunta.opciones.forEach(opcion => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = opcion;
+        btn.onclick = () => verificarRespuesta(opcion);
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    function verificarRespuesta(respuesta) {
+      const pregunta = preguntas[preguntaActual];
+      const feedbackDiv = document.getElementById('feedback');
+      if (respuesta === pregunta.correcta) {
+        puntaje++;
+        feedbackDiv.textContent = '✅ ¡Correcto!';
+        feedbackDiv.style.color = 'green';
+      } else {
+        feedbackDiv.textContent = `❌ Incorrecto. La respuesta correcta era: ${pregunta.correcta}`;
+        feedbackDiv.style.color = 'red';
+      }
+
+      setTimeout(() => {
+        preguntaActual++;
+        if (preguntaActual < preguntas.length) {
+          mostrarPregunta();
+        } else {
+          mostrarResultado();
+        }
+      }, 1500);
+    }
+
+    function mostrarResultado() {
+      document.getElementById('quiz').style.display = 'none';
+      let mensaje = puntaje >= 3 ? `🎉 ¡Ganaste, ${nombre}!` : `Gracias por jugar, ${nombre}. Sigue aprendiendo sobre el páramo.`;
+      document.getElementById('result').innerHTML = `${mensaje}<br>Tu puntaje fue: ${puntaje}/${preguntas.length}<br><button class="btn" onclick="iniciarJuego()">🔄 Reintentar</button>`;
+    }
+  </script>
+</body>
+</html>
